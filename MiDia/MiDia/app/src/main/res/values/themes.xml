@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.MiDia" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/verde</item>
+        <item name="colorOnPrimary">@color/blanco</item>
+        <item name="colorSecondary">@color/verde</item>
+        <item name="colorPrimaryContainer">@color/verde_claro</item>
+        <item name="android:statusBarColor">@color/verde_oscuro</item>
+    </style>
+
+    <style name="Theme.MiDia.Popup" parent="Theme.Material3.DayNight.Dialog">
+        <item name="colorPrimary">@color/verde</item>
+        <item name="colorOnPrimary">@color/blanco</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
+    </style>
+</resources>
