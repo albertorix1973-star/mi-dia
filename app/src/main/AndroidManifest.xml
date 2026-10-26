@@ -35,6 +35,10 @@
         </activity>
 
         <activity
+            android:name=".MonthActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".ReminderActivity"
             android:excludeFromRecents="true"
             android:exported="false"

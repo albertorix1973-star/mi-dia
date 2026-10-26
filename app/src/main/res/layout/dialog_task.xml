@@ -70,5 +70,14 @@
             android:id="@+id/spinRepeat"
             android:layout_width="match_parent"
             android:layout_height="48dp" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swInsist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
+            android:text="Avisar cada 30 min hasta que la marque como realizada (y luego borrarla)"
+            android:textSize="15sp" />
     </LinearLayout>
 </ScrollView>

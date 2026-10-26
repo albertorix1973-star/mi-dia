@@ -22,9 +22,14 @@ data class Task(
     var repeat: Repeat = Repeat.NONE,
     val doneDates: MutableSet<String> = mutableSetOf(),
     var snoozeUntil: Long = 0L,
-    var snoozeDate: String = ""
+    var snoozeDate: String = "",
+    /** Si es true, el aviso se repite cada 30 min hasta marcarla como realizada (y entonces se borra). */
+    var insist: Boolean = false
 ) {
     val hasTime: Boolean get() = hour >= 0
+
+    /** Al marcarla como realizada se borra (avisos insistentes que no se repiten). */
+    val deleteWhenDone: Boolean get() = insist && repeat == Repeat.NONE
 
     fun occursOn(day: LocalDate): Boolean = when (repeat) {
         Repeat.NONE -> day == date
@@ -56,6 +61,7 @@ data class Task(
         put("done", JSONArray(doneDates.toList()))
         put("snooze", snoozeUntil)
         put("snoozeDate", snoozeDate)
+        put("insist", insist)
     }
 
     companion object {
@@ -84,7 +90,8 @@ data class Task(
                 repeat = rep,
                 doneDates = done,
                 snoozeUntil = o.optLong("snooze", 0L),
-                snoozeDate = o.optString("snoozeDate", "")
+                snoozeDate = o.optString("snoozeDate", ""),
+                insist = o.optBoolean("insist", false)
             )
         }
     }

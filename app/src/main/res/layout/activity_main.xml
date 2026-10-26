@@ -35,6 +35,14 @@
                     android:textStyle="bold" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMonth"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mes"
+                    android:textColor="@color/blanco" />
+
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSettings"
                     style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="wrap_content"

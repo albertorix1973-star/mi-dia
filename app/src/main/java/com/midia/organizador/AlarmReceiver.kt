@@ -15,6 +15,18 @@ class AlarmReceiver : BroadcastReceiver() {
                 val t = TaskStore.load(ctx).find { it.id == id }
                 if (t != null && !t.doneDates.contains(date)) {
                     Notifier.showTask(ctx, t, date)
+                    if (t.insist && t.hasTime) {
+                        // Vuelve a avisar dentro de 30 min mientras no esté realizada
+                        val next = System.currentTimeMillis() + TaskActions.INSIST_MINUTES * 60_000L
+                        TaskStore.update(ctx) { l ->
+                            val x = l.find { it.id == id }
+                            if (x != null) {
+                                x.snoozeUntil = next
+                                x.snoozeDate = date
+                            }
+                        }
+                        return
+                    }
                     if (t.snoozeUntil != 0L && t.snoozeUntil <= System.currentTimeMillis() + 60_000L) {
                         // update() ya reprograma
                         TaskStore.update(ctx) { l -> l.find { it.id == id }?.snoozeUntil = 0L }

@@ -64,20 +64,25 @@ object Notifier {
             .putExtra(Scheduler.EXTRA_ID, t.id)
             .putExtra(Scheduler.EXTRA_DATE, date)
         val fullPi = PendingIntent.getActivity(ctx, code, full, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-        val text = if (t.hasTime) "Hora: ${t.timeText()}" else "Tarea pendiente"
+        val text = when {
+            t.insist -> "Te lo recordaré cada ${TaskActions.INSIST_MINUTES} min hasta que la marques como realizada"
+            t.hasTime -> "Hora: ${t.timeText()}"
+            else -> "Tarea pendiente"
+        }
 
         val n = NotificationCompat.Builder(ctx, CH_TASKS)
             .setSmallIcon(R.drawable.ic_notif)
             .setColor(ContextCompat.getColor(ctx, R.color.verde))
             .setContentTitle(t.title)
             .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setAutoCancel(true)
             .setContentIntent(openApp(ctx))
             .setFullScreenIntent(fullPi, true)
-            .addAction(0, "Hecho", actionPi(ctx, Scheduler.ACTION_DONE, t.id, date, code))
+            .addAction(0, "✔ Realizada", actionPi(ctx, Scheduler.ACTION_DONE, t.id, date, code))
             .addAction(0, "+10 min", actionPi(ctx, Scheduler.ACTION_SNOOZE, t.id, date, code))
             .addAction(0, "Mañana", actionPi(ctx, Scheduler.ACTION_TOMORROW, t.id, date, code))
             .build()

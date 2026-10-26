@@ -32,6 +32,8 @@ object TaskDialog {
         val btnTime = v.findViewById<Button>(R.id.btnTime)
         val btnNoTime = v.findViewById<Button>(R.id.btnNoTime)
         val spin = v.findViewById<Spinner>(R.id.spinRepeat)
+        val swInsist = v.findViewById<SwitchCompat>(R.id.swInsist)
+        swInsist.isChecked = existing?.insist ?: draft?.insist ?: true
 
         var date: LocalDate = existing?.date ?: draft?.date ?: LocalDate.now()
         var hour: Int = existing?.hour ?: draft?.hour ?: -1
@@ -88,6 +90,7 @@ object TaskDialog {
                     edit.error = "Escribe la tarea"
                 } else {
                     val rep = Repeat.values()[spin.selectedItemPosition]
+                    val insist = swInsist.isChecked
                     TaskStore.update(act) { l ->
                         val t = if (existing != null) l.find { it.id == existing.id } else null
                         if (t != null) {
@@ -96,13 +99,18 @@ object TaskDialog {
                             t.hour = hour
                             t.minute = minute
                             t.repeat = rep
+                            t.insist = insist
                             t.snoozeUntil = 0L
                         } else {
-                            l.add(Task(TaskStore.newId(), title, date, hour, minute, rep))
+                            l.add(Task(TaskStore.newId(), title, date, hour, minute, rep, insist = insist))
                         }
                     }
-                    val aviso = if (hour >= 0) "Te avisaré a las ${Fechas.hhmm(hour, minute)}" else "Tarea guardada (sin hora, saldrá en el resumen)"
-                    Toast.makeText(act, aviso, Toast.LENGTH_SHORT).show()
+                    val aviso = when {
+                        hour < 0 -> "Tarea guardada (sin hora, saldrá en el resumen)"
+                        insist -> "Te avisaré a las ${Fechas.hhmm(hour, minute)} y cada ${TaskActions.INSIST_MINUTES} min hasta que la marques como realizada"
+                        else -> "Te avisaré a las ${Fechas.hhmm(hour, minute)}"
+                    }
+                    Toast.makeText(act, aviso, Toast.LENGTH_LONG).show()
                     onSaved()
                     dlg.dismiss()
                 }

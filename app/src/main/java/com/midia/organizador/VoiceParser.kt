@@ -9,7 +9,8 @@ data class Draft(
     val date: LocalDate,
     val hour: Int = -1,
     val minute: Int = 0,
-    val repeat: Repeat = Repeat.NONE
+    val repeat: Repeat = Repeat.NONE,
+    val insist: Boolean = true
 )
 
 private fun limpiar(t: String): String =
@@ -41,6 +42,7 @@ private class Cursor(texto: String) {
  *  "Reunión el viernes a las 17:30"
  *  "Gimnasio cada lunes a las 7"
  *  "Pagar el seguro el 5 de noviembre"
+ *  "Avísame el 5 de noviembre a las 10:00 que haga un café"
  */
 object VoiceParser {
     private const val DIAS = "lunes|martes|mi[ée]rcoles|jueves|viernes|s[áa]bado|domingo"

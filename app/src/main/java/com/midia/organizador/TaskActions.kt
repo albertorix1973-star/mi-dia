@@ -7,6 +7,7 @@ import java.time.LocalDate
 
 /** Acciones comunes: desde la lista, desde la notificación o desde la ventana emergente. */
 object TaskActions {
+    const val INSIST_MINUTES = 30
 
     private fun cancelNotif(ctx: Context, id: Long) {
         NotificationManagerCompat.from(ctx).cancel(Scheduler.code(id))
@@ -16,7 +17,9 @@ object TaskActions {
         TaskStore.update(ctx) { l ->
             val t = l.find { it.id == id }
             if (t != null) {
-                if (done) {
+                if (done && t.deleteWhenDone) {
+                    l.remove(t)
+                } else if (done) {
                     t.doneDates.add(date)
                     t.snoozeUntil = 0L
                 } else {
@@ -70,7 +73,7 @@ object TaskActions {
                 tomorrow.dayOfWeek != DayOfWeek.SUNDAY -> t.doneDates.add(date)
             else -> {
                 t.doneDates.add(date)
-                l.add(Task(TaskStore.newId(), t.title, tomorrow, t.hour, t.minute))
+                l.add(Task(TaskStore.newId(), t.title, tomorrow, t.hour, t.minute, insist = t.insist))
             }
         }
     }

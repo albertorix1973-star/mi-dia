@@ -31,6 +31,15 @@ class MainActivity : AppCompatActivity() {
     private val notifPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { checkSetup() }
 
+    private val monthLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { res ->
+            val dia = res.data?.getStringExtra(MonthActivity.EXTRA_DIA)
+            if (dia != null) {
+                day = LocalDate.parse(dia)
+                refresh()
+            }
+        }
+
     private val voiceLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { res ->
             if (res.resultCode == RESULT_OK) {
@@ -59,6 +68,9 @@ class MainActivity : AppCompatActivity() {
         }
         findViewById<View>(R.id.btnVoice).setOnClickListener { startVoice() }
         findViewById<View>(R.id.btnSettings).setOnClickListener { AjustesDialog.show(this) }
+        findViewById<View>(R.id.btnMonth).setOnClickListener {
+            monthLauncher.launch(Intent(this, MonthActivity::class.java))
+        }
 
         Scheduler.rescheduleAll(this)
 
@@ -157,11 +169,17 @@ class MainActivity : AppCompatActivity() {
 
             val info = mutableListOf<String>()
             if (t.repeat != Repeat.NONE) info.add("🔁 " + t.repeatText())
-            if (t.snoozeUntil > now && t.snoozeDate == day.toString()) info.add("⏰ pospuesta hasta las " + Fechas.hora(t.snoozeUntil))
+            if (t.insist) info.add("🔔 cada ${TaskActions.INSIST_MINUTES} min")
+            if (t.snoozeUntil > now && t.snoozeDate == day.toString()) info.add("⏰ próximo aviso " + Fechas.hora(t.snoozeUntil))
             extra.text = info.joinToString("   ")
             extra.visibility = if (info.isEmpty()) View.GONE else View.VISIBLE
 
-            check.setOnClickListener { TaskActions.setDone(this, t.id, day.toString(), check.isChecked) }
+            check.setOnClickListener {
+                if (check.isChecked && t.deleteWhenDone) {
+                    Toast.makeText(this, "Tarea realizada y borrada ✅", Toast.LENGTH_SHORT).show()
+                }
+                TaskActions.setDone(this, t.id, day.toString(), check.isChecked)
+            }
             v.setOnClickListener { TaskDialog.show(this, t, null) { refresh() } }
             v.setOnLongClickListener {
                 confirmDelete(t)

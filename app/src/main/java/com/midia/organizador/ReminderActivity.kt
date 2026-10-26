@@ -54,7 +54,8 @@ class ReminderActivity : AppCompatActivity() {
             return
         }
         findViewById<TextView>(R.id.txtTitle).text = t.title
+        val cuando = if (t.hasTime) "Programada para las ${t.timeText()}" else "Tarea de hoy"
         findViewById<TextView>(R.id.txtWhen).text =
-            if (t.hasTime) "Programada para las ${t.timeText()}" else "Tarea de hoy"
+            if (t.insist) "$cuando\nSe repetirá cada ${TaskActions.INSIST_MINUTES} min hasta que pulses «Tarea realizada»" else cuando
     }
 }
